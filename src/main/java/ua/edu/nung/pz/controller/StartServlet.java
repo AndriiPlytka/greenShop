@@ -5,6 +5,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import ua.edu.nung.pz.model.Firebase;
 import ua.edu.nung.pz.model.User;
 import ua.edu.nung.pz.view.IndexView;
@@ -22,6 +23,9 @@ public class StartServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         String body = "";
         String context = "";
+        HttpSession httpSession = request.getSession();
+        User user = (User) httpSession.getAttribute(User.USER_SESSION_NAME);
+        String userName = user == null ? "" : user.getDisplayName();
 
         switch (request.getPathInfo()) {
             case "/contacts":
@@ -40,24 +44,15 @@ public class StartServlet extends HttpServlet {
 
 
         body = IndexView.getInstance().getBody(
-                IndexView.getInstance().getHeader(""),
+                IndexView.getInstance().getHeader(userName),
                 IndexView.getInstance().getFooter(""),
                 context);
 
         out.println(IndexView.getInstance().getPage("Green Shop", body));
 
-        User user = new User();
-        user.setEmail("email@email.com");
-        user.setPassword("112211221122");
-        user.setDisplayName("Test User");
-        Firebase firebase = Firebase.getInstance();
-        if (firebase.getUserByEmail(user.getEmail()).toString() != "OK"){
-            //TODO user problem
-            System.out.println("User Exist");
-        }
-        else {
-            String usrMsg = Firebase.getInstance().createUser(user);
-        }
+//        user.setEmail("email1@email.com");
+//        user.setPassword("112211221122");
+//        user.setDisplayName("Test User");
     }
 
     @Override
@@ -65,9 +60,27 @@ public class StartServlet extends HttpServlet {
         String contextPath = request.getContextPath();
         String email = request.getParameter("email");
         String password = request.getParameter("password");
+        HttpSession httpSession;
         User user = new User();
         user.setEmail(email);
         user.setPassword(password);
+
+        // login / register
+        Firebase firebase = Firebase.getInstance();
+        if (firebase.getUserByEmail(user.getEmail()).equals(Firebase.USER_EXISTS)) {
+            String firebaseResponse = firebase.signInWithEmailAndPassword(user.getEmail(), user.getPassword());
+            if(firebaseResponse.equals(Firebase.PASSWORD_OK)) {
+                System.out.println(Firebase.PASSWORD_OK);
+                user.setDisplayName("Best User");
+                httpSession = request.getSession();
+                httpSession.setAttribute(User.USER_SESSION_NAME, user);
+            }  else {
+                System.out.println("Wrong Password");
+            }
+        } else {
+            System.out.println("User NOT Exist");
+            String userMsg = Firebase.getInstance().createUser(user);
+        }
 
         System.out.println(user);
 
@@ -81,23 +94,21 @@ public class StartServlet extends HttpServlet {
         IndexView indexView = IndexView.getInstance();
         indexView.setPath(path);
 
-        String[] firebaseConfig = readFirebaseConfig();
-        Firebase.getInstance().setFirebaseConfigPath(firebaseConfig[0]);
-        Firebase.getInstance().setFirebaseName(firebaseConfig[1]);
-        Firebase.getInstance().init();
+        initFirebase();
     }
 
-    private String[] readFirebaseConfig() {
+    private void initFirebase() {
         Properties props = new Properties();
-        String[] firebasrProp = new String[2];
         InputStream is = getClass().getClassLoader().getResourceAsStream("app.properties");
         try {
             props.load(is);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        firebasrProp[0] = props.getProperty("file.path");
-        firebasrProp[1] = props.getProperty("firebase.name");
-        return firebasrProp;
+        Firebase.getInstance().setFirebaseConfigPath(props.getProperty("file.path"));
+        Firebase.getInstance().setFirebaseName(props.getProperty("firebase.name"));
+        Firebase.getInstance().setApiKey(props.getProperty("web.api.key"));
+        Firebase.getInstance().setSignInUrl(props.getProperty("signInUrl"));
+        Firebase.getInstance().init();
     }
 }

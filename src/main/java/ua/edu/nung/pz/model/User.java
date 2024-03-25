@@ -1,28 +1,25 @@
 package ua.edu.nung.pz.model;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
-import com.google.firebase.auth.UserRecord;
-
 import java.util.Objects;
 
 public class User {
+    public static final String USER_SESSION_NAME = "user";
+    private long id;
     private String email;
     private String password;
     private String displayName;
-    private String phone;
-    private String city;
-    private String street;
+    private String option;
+    private String created_at;
+    private String deleted_at;
 
-    public User() {}
 
-    public User(String email, String password, String displayName, String phone, String city, String street) {
+    public User() {
+    }
+
+    public User(String email, String password, String displayName, String phone, String city) {
         this.email = email;
         this.password = password;
         this.displayName = displayName;
-        this.phone = phone;
-        this.city = city;
-        this.street = street;
     }
 
     public String getEmail() {
@@ -41,30 +38,6 @@ public class User {
         this.password = password;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
     public String getDisplayName() {
         return displayName;
     }
@@ -76,26 +49,26 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "Email='" + email + '\'' +
-                ", Password='" + password + '\'' +
-                ", Phone='" + phone + '\'' +
-                ", City='" + city + '\'' +
-                ", Street='" + street + '\'' +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", displayName='" + displayName + '\'' +
+                ", option='" + option + '\'' +
+                ", created_at='" + created_at + '\'' +
+                ", deleted_at='" + deleted_at + '\'' +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof User)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(getEmail(), user.getEmail()) && Objects.equals(getPhone(), user.getPhone()) && Objects.equals(getCity(), user.getCity()) && Objects.equals(getStreet(), user.getStreet());
+        return id == user.id && Objects.equals(email, user.email) && Objects.equals(password, user.password) && Objects.equals(displayName, user.displayName) && Objects.equals(option, user.option) && Objects.equals(created_at, user.created_at) && Objects.equals(deleted_at, user.deleted_at);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getEmail(), getPassword(), getPhone(), getCity(), getStreet());
+        return Objects.hash(id, email, password, displayName, option, created_at, deleted_at);
     }
-
-
 }
