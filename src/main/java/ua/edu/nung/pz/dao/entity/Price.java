@@ -8,19 +8,39 @@ public class Price {
     private long good_id;
     private double from_supplier;
     private double for_client;
+    private int income;
+    private int outcome;
     private String created_at;
     private String deleted_at;
 
     public Price() {
     }
 
-    public Price(long id, long good_id, double from_supplier, double for_client, String created_at, String deleted_at) {
+    public Price(long id, long good_id, double from_supplier, double for_client, int income, int outcome, String created_at, String deleted_at) {
         this.id = id;
         this.good_id = good_id;
         this.from_supplier = from_supplier;
         this.for_client = for_client;
+        this.income = income;
+        this.outcome = outcome;
         this.created_at = created_at;
         this.deleted_at = deleted_at;
+    }
+
+    public int getIncome() {
+        return income;
+    }
+
+    public void setIncome(int income) {
+        this.income = income;
+    }
+
+    public int getOutcome() {
+        return outcome;
+    }
+
+    public void setOutcome(int outcome) {
+        this.outcome = outcome;
     }
 
     public long getId() {
@@ -78,6 +98,8 @@ public class Price {
                 ", good_id=" + good_id +
                 ", from_supplier=" + from_supplier +
                 ", for_client=" + for_client +
+                ", income=" + income +
+                ", outcome=" + outcome +
                 ", created_at='" + created_at + '\'' +
                 ", deleted_at='" + deleted_at + '\'' +
                 '}';
@@ -86,13 +108,13 @@ public class Price {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Price)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Price price = (Price) o;
-        return getId() == price.getId() && getGood_id() == price.getGood_id() && Double.compare(getFrom_supplier(), price.getFrom_supplier()) == 0 && Double.compare(getFor_client(), price.getFor_client()) == 0 && Objects.equals(getCreated_at(), price.getCreated_at()) && Objects.equals(getDeleted_at(), price.getDeleted_at());
+        return id == price.id && good_id == price.good_id && Double.compare(price.from_supplier, from_supplier) == 0 && Double.compare(price.for_client, for_client) == 0 && income == price.income && outcome == price.outcome && Objects.equals(created_at, price.created_at) && Objects.equals(deleted_at, price.deleted_at);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getGood_id(), getFrom_supplier(), getFor_client(), getCreated_at(), getDeleted_at());
+        return Objects.hash(id, good_id, from_supplier, for_client, income, outcome, created_at, deleted_at);
     }
 }

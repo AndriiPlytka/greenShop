@@ -3,6 +3,9 @@ package ua.edu.nung.pz.dao.entity;
 import java.util.Arrays;
 import java.util.Objects;
 
+
+
+
 public class Good {
     private long id;
     private String name;
